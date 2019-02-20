@@ -6,11 +6,12 @@ import java.sql.Statement;
 
 public class DBManager {
 
-	public void dbDDLRequest(String request) {
+	public Integer dbDDLRequest(String request) {
+		Integer result = null;
 		Statement st = null;
 		try {
 			st = DBOpenHelper.getInstance().getConn().createStatement();
-			st.executeUpdate(request);
+			result = st.executeUpdate(request);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -20,6 +21,8 @@ public class DBManager {
 				e.printStackTrace();
 			}
 		}
+
+		return result;
 	}
 
 	public void dbSelectRequest(String request) {

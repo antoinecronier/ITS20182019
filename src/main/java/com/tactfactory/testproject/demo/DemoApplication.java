@@ -1,17 +1,10 @@
 package com.tactfactory.testproject.demo;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.tactfactory.testproject.demo.dao.RoleDAOImp;
 import com.tactfactory.testproject.demo.dao.UserDAOImp;
-import com.tactfactory.testproject.demo.database.DBOpenHelper;
-import com.tactfactory.testproject.demo.database.contracts.RoleContract;
-import com.tactfactory.testproject.demo.database.contracts.UserContract;
 import com.tactfactory.testproject.demo.entities.Role;
 import com.tactfactory.testproject.demo.entities.User;
 
@@ -28,24 +21,17 @@ public class DemoApplication {
 		userDAO.deleteTable();
 		userDAO.createTable();
 
-		User user = userDAO.save(new User("firstname", "lastname", "login", "password", new Role("name")));
+		User user = userDAO.save(new User("firstname", "lastname", "login", "password", new Role("mon role 1")));
 
 		System.out.println(user.getId());
 
-		user.setRole(null);
-		user = userDAO.save(user);
+		Role role = roleDAO.getById(1L);
 
-		System.out.println(user.getId());
+		User newUser = userDAO.getById(1L);
 
-//		dbDDLRequest(UserContract.DROP_TABLE);
-//		dbDDLRequest(RoleContract.DROP_TABLE);
-//
-//		dbDDLRequest(RoleContract.SCHEME_CREATE);
-//		dbDDLRequest(UserContract.SCHEME_CREATE);
-//
-//		for (String constrainte : UserContract.CONSTRAINTS) {
-//			dbDDLRequest(constrainte);
-//		}
+		for (int i = 0; i < 2000; i++) {
+			userDAO.save(new User("firstname"+i, "lastname"+i, "login", "password", null));
+		}
 
 		SpringApplication.run(DemoApplication.class, args);
 	}

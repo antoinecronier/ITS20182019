@@ -1,7 +1,14 @@
 package com.tactfactory.testproject.demo.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import com.tactfactory.testproject.demo.database.DBManager;
+import com.tactfactory.testproject.demo.database.DBOpenHelper;
+import com.tactfactory.testproject.demo.database.contracts.RoleContract;
 import com.tactfactory.testproject.demo.database.contracts.UserContract;
+import com.tactfactory.testproject.demo.entities.Role;
 import com.tactfactory.testproject.demo.entities.User;
 
 public class UserDAOImp extends BaseEntityDAOImp<User> {
@@ -81,12 +88,75 @@ public class UserDAOImp extends BaseEntityDAOImp<User> {
 
 	@Override
 	public User getById(Long id) {
-		return null;
+		User user = new User();
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("SELECT ");
+		for (String columnName : UserContract.COLS_SELECT) {
+			builder.append(columnName);
+			builder.append(",");
+		}
+		builder.setLength(builder.length() - 1);
+
+		builder.append(" FROM ");
+		builder.append(UserContract.TABLE_NAME);
+		builder.append(" WHERE ");
+		builder.append(UserContract.COL_ID);
+		builder.append(" = ");
+		builder.append(id);
+
+		Statement st = null;
+		try {
+			st = DBOpenHelper.getInstance().getConn().createStatement();
+			ResultSet rs = st.executeQuery(builder.toString());
+			while (rs.next()) {
+				user.setId(rs.getLong(rs.findColumn(UserContract.ALIASED_COL_ID)));
+				user.setFirstname(rs.getString(rs.findColumn(UserContract.ALIASED_COL_FIRSTNAME)));
+				user.setLastname(rs.getString(rs.findColumn(UserContract.ALIASED_COL_LASTNAME)));
+				user.setLogin(rs.getString(rs.findColumn(UserContract.ALIASED_COL_LOGIN)));
+				user.setPassword(rs.getString(rs.findColumn(UserContract.ALIASED_COL_PASSWORD)));
+
+				Long fkRole = rs.getLong(rs.findColumn(UserContract.ALIASED_FK_COL_ROLE_ID));
+				if (fkRole != null) {
+					RoleDAOImp roleDAO = new RoleDAOImp();
+					user.setRole(roleDAO.getById(fkRole));
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				st.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return user;
 	}
 
 	@Override
 	public Boolean delete(User item) {
-		return null;
+		Boolean result = false;
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("DELETE ");
+		builder.append(" FROM ");
+		builder.append(UserContract.TABLE_NAME);
+		builder.append(" WHERE ");
+		builder.append(UserContract.COL_ID);
+		builder.append(" = ");
+		builder.append(item.getId());
+
+		Integer changedLine = manager.dbDDLRequest(builder.toString());
+
+		if (changedLine != null) {
+			if (changedLine == 1) {
+				result = true;
+			}
+		}
+
+		return result;
 	}
 
 	@Override
