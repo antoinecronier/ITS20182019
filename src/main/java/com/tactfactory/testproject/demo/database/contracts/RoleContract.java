@@ -11,6 +11,8 @@ public class RoleContract {
 	public static final String ALIASED_COL_NAME = TABLE_NAME + "." + COL_NAME;
 
 	public static final String[] COLS_INSERT = { COL_NAME };
+	public static final String[] COLS_INSERT_ALL = { COL_NAME };
+
 	public static final String[] COLS_SELECT = { ALIASED_COL_ID, ALIASED_COL_NAME };
 
 	public static final String SCHEME_CREATE =
