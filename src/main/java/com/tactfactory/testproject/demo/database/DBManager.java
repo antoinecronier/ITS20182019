@@ -49,4 +49,29 @@ public class DBManager {
 			}
 		}
 	}
+
+	public Long insertAutoIncrementRequest(String request) {
+		Long result = null;
+		Statement stmt = null;
+		try {
+			stmt = DBOpenHelper.getInstance().getConn().createStatement();
+			stmt.executeUpdate(request, Statement.RETURN_GENERATED_KEYS);
+			ResultSet rs = stmt.getGeneratedKeys();
+			try {
+				rs.next();
+				result = rs.getLong(1);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
+	}
 }
