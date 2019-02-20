@@ -1,6 +1,8 @@
 package com.tactfactory.testproject.demo.entities;
 
-public class Role {
+import com.tactfactory.testproject.demo.entities.base.BaseEntity;
+
+public class Role extends BaseEntity {
 
 	private String name;
 

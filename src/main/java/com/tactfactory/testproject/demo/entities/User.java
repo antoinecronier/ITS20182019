@@ -1,6 +1,8 @@
 package com.tactfactory.testproject.demo.entities;
 
-public class User {
+import com.tactfactory.testproject.demo.entities.base.BaseEntity;
+
+public class User extends BaseEntity {
 
 	private String firstname;
 	private String lastname;
