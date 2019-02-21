@@ -3,11 +3,12 @@ package com.tactfactory.testproject.demo.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.tactfactory.testproject.demo.database.DBManager;
 import com.tactfactory.testproject.demo.database.DBOpenHelper;
 import com.tactfactory.testproject.demo.database.contracts.RoleContract;
-import com.tactfactory.testproject.demo.database.contracts.UserContract;
 import com.tactfactory.testproject.demo.entities.Role;
 
 public class RoleDAOImp extends BaseEntityDAOImp<Role> {
@@ -121,5 +122,67 @@ public class RoleDAOImp extends BaseEntityDAOImp<Role> {
 	@Override
 	public void deleteTable() {
 		manager.dbDDLRequest(RoleContract.DROP_TABLE);
+	}
+
+	@Override
+	public List<Role> save(List<Role> items) {
+		List<Role> result = new ArrayList<Role>();
+
+		for (Role role : items) {
+			result.add(save(role));
+		}
+
+		return result;
+	}
+
+	@Override
+	public List<Role> get() {
+		List<Role> result = new ArrayList<Role>();
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("SELECT ");
+		for (String columnName : RoleContract.COLS_SELECT) {
+			builder.append(columnName);
+			builder.append(",");
+		}
+		builder.setLength(builder.length() - 1);
+
+		builder.append(" FROM ");
+		builder.append(RoleContract.TABLE_NAME);
+
+		Statement st = null;
+		try {
+			st = DBOpenHelper.getInstance().getConn().createStatement();
+			ResultSet rs = st.executeQuery(builder.toString());
+			while (rs.next()) {
+				Role role = new Role();
+				role.setId(rs.getLong(rs.findColumn(RoleContract.ALIASED_COL_ID)));
+				role.setName(rs.getString(rs.findColumn(RoleContract.ALIASED_COL_NAME)));
+				result.add(role);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				st.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return result;
+	}
+
+	@Override
+	public Boolean delete(List<Role> items) {
+		Boolean result = true;
+
+		for (Role role : items) {
+			if (!delete(role)) {
+				result = false;
+			}
+		}
+
+		return result;
 	}
 }

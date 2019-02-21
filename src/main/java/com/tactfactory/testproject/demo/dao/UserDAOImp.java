@@ -3,6 +3,8 @@ package com.tactfactory.testproject.demo.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.tactfactory.testproject.demo.database.DBManager;
 import com.tactfactory.testproject.demo.database.DBOpenHelper;
@@ -167,6 +169,79 @@ public class UserDAOImp extends BaseEntityDAOImp<User> {
 	@Override
 	public void deleteTable() {
 		manager.dbDDLRequest(UserContract.DROP_TABLE);
+	}
+
+	@Override
+	public List<User> save(List<User> items) {
+		List<User> result = new ArrayList<User>();
+
+		for (User user : items) {
+			result.add(save(user));
+		}
+
+		return result;
+	}
+
+	@Override
+	public List<User> get() {
+		List<User> result = new ArrayList<User>();
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("SELECT ");
+		for (String columnName : UserContract.COLS_SELECT) {
+			builder.append(columnName);
+			builder.append(",");
+		}
+		builder.setLength(builder.length() - 1);
+
+		builder.append(" FROM ");
+		builder.append(UserContract.TABLE_NAME);
+
+		Statement st = null;
+		try {
+			st = DBOpenHelper.getInstance().getConn().createStatement();
+			ResultSet rs = st.executeQuery(builder.toString());
+			while (rs.next()) {
+				User user = new User();
+
+				user.setId(rs.getLong(rs.findColumn(UserContract.ALIASED_COL_ID)));
+				user.setFirstname(rs.getString(rs.findColumn(UserContract.ALIASED_COL_FIRSTNAME)));
+				user.setLastname(rs.getString(rs.findColumn(UserContract.ALIASED_COL_LASTNAME)));
+				user.setLogin(rs.getString(rs.findColumn(UserContract.ALIASED_COL_LOGIN)));
+				user.setPassword(rs.getString(rs.findColumn(UserContract.ALIASED_COL_PASSWORD)));
+
+				Long fkRole = rs.getLong(rs.findColumn(UserContract.ALIASED_FK_COL_ROLE_ID));
+				if (fkRole != null) {
+					RoleDAOImp roleDAO = new RoleDAOImp();
+					user.setRole(roleDAO.getById(fkRole));
+				}
+
+				result.add(user);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				st.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return result;
+	}
+
+	@Override
+	public Boolean delete(List<User> items) {
+		Boolean result = true;
+
+		for (User user : items) {
+			if (!delete(user)) {
+				result = false;
+			}
+		}
+
+		return result;
 	}
 
 }
