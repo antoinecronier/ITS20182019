@@ -1,6 +1,6 @@
 package com.tactfactory.testproject.demo.database.contracts;
 
-public class RoleContract {
+public class RoleContract extends BaseContract {
 
 	public static final String TABLE_NAME = "role";
 
@@ -25,4 +25,32 @@ public class RoleContract {
 	public static final String DROP_TABLE = "DROP TABLE " + TABLE_NAME;
 
 	public static final String[] CONSTRAINTS = {};
+
+	public RoleContract() {
+		super(
+				TABLE_NAME,
+				COL_ID,
+				ALIASED_COL_ID,
+				COLS_INSERT,
+				COLS_INSERT_ALL,
+				COLS_SELECT,
+				SCHEME_CREATE,
+				DROP_TABLE,
+				CONSTRAINTS);
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

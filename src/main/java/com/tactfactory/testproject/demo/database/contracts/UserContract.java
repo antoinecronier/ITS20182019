@@ -1,6 +1,6 @@
 package com.tactfactory.testproject.demo.database.contracts;
 
-public class UserContract {
+public class UserContract extends BaseContract {
 
 	public static final String TABLE_NAME = "user";
 
@@ -63,14 +63,17 @@ public class UserContract {
 				" FOREIGN KEY (" + FK_COL_ROLE_ID +
 				") REFERENCES " + RoleContract.TABLE_NAME + "(" + RoleContract.COL_ID + ")"
 				};
+
+	public UserContract() {
+		super(
+				TABLE_NAME,
+				COL_ID,
+				ALIASED_COL_ID,
+				COLS_INSERT,
+				COLS_INSERT_ALL,
+				COLS_SELECT,
+				SCHEME_CREATE,
+				DROP_TABLE,
+				CONSTRAINTS);
+	}
 }
-
-
-
-
-
-
-
-
-
-

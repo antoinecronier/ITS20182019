@@ -6,16 +6,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tactfactory.testproject.demo.database.DBManager;
 import com.tactfactory.testproject.demo.database.DBOpenHelper;
-import com.tactfactory.testproject.demo.database.contracts.RoleContract;
 import com.tactfactory.testproject.demo.database.contracts.UserContract;
-import com.tactfactory.testproject.demo.entities.Role;
 import com.tactfactory.testproject.demo.entities.User;
 
 public class UserDAOImp extends BaseEntityDAOImp<User> {
 
-	private DBManager manager = new DBManager();
+	public UserDAOImp() {
+		super(new UserContract());
+	}
 
 	@Override
 	public User save(User item) {
@@ -138,40 +137,6 @@ public class UserDAOImp extends BaseEntityDAOImp<User> {
 	}
 
 	@Override
-	public Boolean delete(User item) {
-		Boolean result = false;
-
-		StringBuilder builder = new StringBuilder();
-		builder.append("DELETE ");
-		builder.append(" FROM ");
-		builder.append(UserContract.TABLE_NAME);
-		builder.append(" WHERE ");
-		builder.append(UserContract.COL_ID);
-		builder.append(" = ");
-		builder.append(item.getId());
-
-		Integer changedLine = manager.dbDDLRequest(builder.toString());
-
-		if (changedLine != null) {
-			if (changedLine == 1) {
-				result = true;
-			}
-		}
-
-		return result;
-	}
-
-	@Override
-	public void createTable() {
-		manager.dbDDLRequest(UserContract.SCHEME_CREATE);
-	}
-
-	@Override
-	public void deleteTable() {
-		manager.dbDDLRequest(UserContract.DROP_TABLE);
-	}
-
-	@Override
 	public List<User> save(List<User> items) {
 		List<User> result = new ArrayList<User>();
 
@@ -225,19 +190,6 @@ public class UserDAOImp extends BaseEntityDAOImp<User> {
 				st.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}
-		}
-
-		return result;
-	}
-
-	@Override
-	public Boolean delete(List<User> items) {
-		Boolean result = true;
-
-		for (User user : items) {
-			if (!delete(user)) {
-				result = false;
 			}
 		}
 

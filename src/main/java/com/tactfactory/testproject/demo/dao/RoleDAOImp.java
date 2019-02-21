@@ -6,14 +6,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.tactfactory.testproject.demo.database.DBManager;
 import com.tactfactory.testproject.demo.database.DBOpenHelper;
 import com.tactfactory.testproject.demo.database.contracts.RoleContract;
 import com.tactfactory.testproject.demo.entities.Role;
 
 public class RoleDAOImp extends BaseEntityDAOImp<Role> {
 
-	private DBManager manager = new DBManager();
+	public RoleDAOImp() {
+		super(new RoleContract());
+	}
 
 	@Override
 	public Role save(Role item) {
@@ -91,40 +92,6 @@ public class RoleDAOImp extends BaseEntityDAOImp<Role> {
 	}
 
 	@Override
-	public Boolean delete(Role item) {
-		Boolean result = false;
-
-		StringBuilder builder = new StringBuilder();
-		builder.append("DELETE ");
-		builder.append(" FROM ");
-		builder.append(RoleContract.TABLE_NAME);
-		builder.append(" WHERE ");
-		builder.append(RoleContract.COL_ID);
-		builder.append(" = ");
-		builder.append(item.getId());
-
-		Integer changedLine = manager.dbDDLRequest(builder.toString());
-
-		if (changedLine != null) {
-			if (changedLine == 1) {
-				result = true;
-			}
-		}
-
-		return result;
-	}
-
-	@Override
-	public void createTable() {
-		manager.dbDDLRequest(RoleContract.SCHEME_CREATE);
-	}
-
-	@Override
-	public void deleteTable() {
-		manager.dbDDLRequest(RoleContract.DROP_TABLE);
-	}
-
-	@Override
 	public List<Role> save(List<Role> items) {
 		List<Role> result = new ArrayList<Role>();
 
@@ -173,16 +140,4 @@ public class RoleDAOImp extends BaseEntityDAOImp<Role> {
 		return result;
 	}
 
-	@Override
-	public Boolean delete(List<Role> items) {
-		Boolean result = true;
-
-		for (Role role : items) {
-			if (!delete(role)) {
-				result = false;
-			}
-		}
-
-		return result;
-	}
 }
