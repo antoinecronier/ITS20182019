@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -37,4 +39,32 @@ public class HomeController {
 
 		return "/home/index";
 	}
+
+	@RequestMapping(value = {"/index"}, method = {RequestMethod.POST})
+	public String getIndexInfo(@ModelAttribute Role role) {
+
+		System.out.println(role.getName());
+
+		return "redirect:/index";
+	}
+
+	@RequestMapping(value = {"/index/{id}"}, method = {RequestMethod.GET})
+	public String navigate(@PathVariable Integer id) {
+
+		id++;
+
+		return "redirect:/index/"+id;
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+

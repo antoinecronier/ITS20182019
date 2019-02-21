@@ -29,7 +29,18 @@ ${key5?string('dd.MM.yyyy')}
     ${field.getName()}
 </#list>
 </div>
+<div>
+<form action="/index" method="POST">
+    <table>
+        <tr><td>Id:</td><td><input type='text' name='id' value=''/></td></tr>
+        <tr><td>Name:</td><td><input type='text' name='name' value=''/></td></tr>
 
+        <tr><td colspan='2'><input name="submit" type="submit"></td></tr>
+
+    </table>
+</form>
+</div>
+<a href="/index/1">Navigate</a>
 
 
 
