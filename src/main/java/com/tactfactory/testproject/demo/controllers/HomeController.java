@@ -50,10 +50,7 @@ public class HomeController {
 
 	@RequestMapping(value = {"/index/{id}"}, method = {RequestMethod.GET})
 	public String navigate(@PathVariable Integer id) {
-
-		id++;
-
-		return "redirect:/index/"+id;
+		return "redirect:/index/";
 	}
 }
 
