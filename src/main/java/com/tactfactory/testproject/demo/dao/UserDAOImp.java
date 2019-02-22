@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.tactfactory.testproject.demo.database.DBOpenHelper;
 import com.tactfactory.testproject.demo.database.contracts.UserContract;
+import com.tactfactory.testproject.demo.database.dto.UserDTO;
 import com.tactfactory.testproject.demo.entities.User;
 
 public class UserDAOImp extends BaseEntityDAOImp<User> {
@@ -111,16 +112,9 @@ public class UserDAOImp extends BaseEntityDAOImp<User> {
 			st = DBOpenHelper.getInstance().getConn().createStatement();
 			ResultSet rs = st.executeQuery(builder.toString());
 			while (rs.next()) {
-				user.setId(rs.getLong(rs.findColumn(UserContract.ALIASED_COL_ID)));
-				user.setFirstname(rs.getString(rs.findColumn(UserContract.ALIASED_COL_FIRSTNAME)));
-				user.setLastname(rs.getString(rs.findColumn(UserContract.ALIASED_COL_LASTNAME)));
-				user.setLogin(rs.getString(rs.findColumn(UserContract.ALIASED_COL_LOGIN)));
-				user.setPassword(rs.getString(rs.findColumn(UserContract.ALIASED_COL_PASSWORD)));
-
-				Long fkRole = rs.getLong(rs.findColumn(UserContract.ALIASED_FK_COL_ROLE_ID));
-				if (fkRole != null) {
-					RoleDAOImp roleDAO = new RoleDAOImp();
-					user.setRole(roleDAO.getById(fkRole));
+				UserDTO userDto = new UserDTO();
+				while (rs.next()) {
+					user = userDto.parseIn(rs);
 				}
 			}
 		} catch (SQLException e) {
@@ -166,22 +160,9 @@ public class UserDAOImp extends BaseEntityDAOImp<User> {
 		try {
 			st = DBOpenHelper.getInstance().getConn().createStatement();
 			ResultSet rs = st.executeQuery(builder.toString());
+			UserDTO userDto = new UserDTO();
 			while (rs.next()) {
-				User user = new User();
-
-				user.setId(rs.getLong(rs.findColumn(UserContract.ALIASED_COL_ID)));
-				user.setFirstname(rs.getString(rs.findColumn(UserContract.ALIASED_COL_FIRSTNAME)));
-				user.setLastname(rs.getString(rs.findColumn(UserContract.ALIASED_COL_LASTNAME)));
-				user.setLogin(rs.getString(rs.findColumn(UserContract.ALIASED_COL_LOGIN)));
-				user.setPassword(rs.getString(rs.findColumn(UserContract.ALIASED_COL_PASSWORD)));
-
-				Long fkRole = rs.getLong(rs.findColumn(UserContract.ALIASED_FK_COL_ROLE_ID));
-				if (fkRole != null) {
-					RoleDAOImp roleDAO = new RoleDAOImp();
-					user.setRole(roleDAO.getById(fkRole));
-				}
-
-				result.add(user);
+				result.add(userDto.parseIn(rs));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -194,6 +175,51 @@ public class UserDAOImp extends BaseEntityDAOImp<User> {
 		}
 
 		return result;
+	}
+
+	public User getByLoginAndPassword(String login, String password) {
+		User user = new User();
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("SELECT ");
+		for (String columnName : UserContract.COLS_SELECT) {
+			builder.append(columnName);
+			builder.append(",");
+		}
+		builder.setLength(builder.length() - 1);
+
+		builder.append(" FROM ");
+		builder.append(UserContract.TABLE_NAME);
+		builder.append(" WHERE ");
+		builder.append(UserContract.COL_LOGIN);
+		builder.append(" = ");
+		builder.append("'" + login + "'");
+		builder.append(" AND ");
+		builder.append(UserContract.COL_PASSWORD);
+		builder.append(" = ");
+		builder.append("'" + password + "'");
+
+		Statement st = null;
+		try {
+			st = DBOpenHelper.getInstance().getConn().createStatement();
+			ResultSet rs = st.executeQuery(builder.toString());
+			while (rs.next()) {
+				UserDTO userDto = new UserDTO();
+				while (rs.next()) {
+					user = userDto.parseIn(rs);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				st.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return user;
 	}
 
 }

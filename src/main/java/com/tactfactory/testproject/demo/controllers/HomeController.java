@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.tactfactory.testproject.demo.dao.UserDAOImp;
 import com.tactfactory.testproject.demo.database.contracts.UserContract;
+import com.tactfactory.testproject.demo.dto.LoginFormDTO;
 import com.tactfactory.testproject.demo.entities.Role;
 import com.tactfactory.testproject.demo.entities.User;
 
@@ -41,9 +43,13 @@ public class HomeController {
 	}
 
 	@RequestMapping(value = {"/index"}, method = {RequestMethod.POST})
-	public String getIndexInfo(@ModelAttribute Role role) {
+	public String getIndexInfo(@ModelAttribute LoginFormDTO dto) {
 
-		System.out.println(role.getName());
+		UserDAOImp userDao = new UserDAOImp();
+		User user = userDao.getByLoginAndPassword(
+				dto.getUser().getLogin(),
+				dto.getUser().getPassword()
+				);
 
 		return "redirect:/index";
 	}
